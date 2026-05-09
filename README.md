@@ -1,70 +1,266 @@
-# Getting Started with Create React App
+# DevPricer — Freelance Project Pricing Calculator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+DevPricer is a modern React application for estimating freelance web development projects.
 
-## Available Scripts
+It helps freelancers and agencies quickly calculate project pricing based on:
 
-In the project directory, you can run:
+* Hourly rate derived from salary targets
+* Project modules and estimated hours
+* Complexity multipliers
+* Scope/risk buffers
+* Suggested payment schedules
+* Printable client-ready estimates
 
-### `npm start`
+The app is designed to make pricing conversations faster, clearer, and more professional.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+### Rate Calculation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Define your target monthly salary and freelancer multiplier to automatically calculate:
 
-### `npm run build`
+* Full-time hourly rate
+* Freelance hourly rate
+* Suggested day rate
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This helps convert salaried compensation expectations into sustainable freelance pricing.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Modular Project Estimation
 
-### `npm run eject`
+Select from predefined project modules such as:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* Authentication & user management
+* Dashboard & analytics
+* API integration
+* CRUD/data tables
+* UI/design systems
+* Forms & validation
+* Payments
+* Roles & permissions
+* Notifications
+* Deployment & CI
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Each module includes editable estimated hours.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+You can also:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* Add custom modules
+* Remove custom modules
+* Select all modules
+* Clear all selections
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Complexity-Based Pricing
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Projects can be adjusted using predefined complexity levels:
 
-### Code Splitting
+| Level      | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| Simple     | Basic MVPs, landing pages, internal tools                |
+| Standard   | Typical client applications with integrations            |
+| Complex    | Real-time systems, evolving requirements, advanced logic |
+| Enterprise | Large-scale SaaS, compliance-heavy, multi-team projects  |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Each level applies a pricing multiplier and includes practical payment advice.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Scope Buffering
 
-### Making a Progressive Web App
+Add a configurable percentage buffer to account for:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* Scope creep
+* Revisions
+* Communication overhead
+* Unknown technical complexity
+* Client delays
 
-### Advanced Configuration
+This helps produce more realistic and profitable estimates.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+### Estimate Breakdown
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The application generates a complete pricing summary including:
 
-### `npm run build` fails to minify
+* Total active project hours
+* Raw hourly cost
+* Complexity-adjusted pricing
+* Buffer amount
+* Final project total
+* Suggested pricing range
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+### Payment Schedule Suggestions
+
+DevPricer automatically suggests a structured payment plan:
+
+* Deposit
+* Milestone payment
+* Final delivery payment
+
+Each phase includes:
+
+* Percentage allocation
+* Calculated amount
+* Recommended payment guidance
+
+---
+
+### Printable Proposal View
+
+The app includes a print-optimized export view designed for:
+
+* Client proposals
+* PDF exports
+* Pricing documentation
+* Internal estimation reviews
+
+The print layout includes:
+
+* Project modules
+* Cost breakdown
+* Payment schedule
+* Complexity notes
+* Clean A4 formatting
+
+---
+
+## Tech Stack
+
+* React 19
+* CSS Modules
+* Custom React Hooks
+* Create React App
+
+Additional libraries:
+
+* `html2canvas`
+* `jspdf`
+
+---
+
+## Project Structure
+
+```txt
+src/
+├── components/
+│   ├── Header.jsx
+│   ├── RateSection.jsx
+│   ├── ModulesSection.jsx
+│   ├── ComplexitySection.jsx
+│   ├── EstimateSection.jsx
+│   ├── PaymentSection.jsx
+│   └── PrintView.jsx
+│
+├── hooks/
+│   └── usePricing.js
+│
+├── utils.js
+├── App.jsx
+├── index.js
+└── index.css
+```
+
+---
+
+## Core Pricing Logic
+
+The estimate calculation follows this formula:
+
+```txt
+Total Hours
+× Freelance Hourly Rate
+× Complexity Multiplier
++ Scope Buffer
+= Final Project Price
+```
+
+Freelance hourly rate is derived from:
+
+```txt
+(monthly salary / 160 working hours) × freelancer multiplier
+```
+
+---
+
+## Getting Started
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Run Development Server
+
+```bash
+npm start
+```
+
+The app will run at:
+
+```txt
+http://localhost:3000
+```
+
+---
+
+## Build for Production
+
+```bash
+npm run build
+```
+
+---
+
+## Scripts
+
+| Command         | Description              |
+| --------------- | ------------------------ |
+| `npm start`     | Start development server |
+| `npm run build` | Create production build  |
+| `npm test`      | Run tests                |
+| `npm run eject` | Eject CRA configuration  |
+
+---
+
+## Use Cases
+
+DevPricer is useful for:
+
+* Freelance developers
+* Software consultants
+* Small agencies
+* Technical project scoping
+* Proposal preparation
+* Discovery calls
+* Internal budgeting
+
+---
+
+## Future Improvements
+
+Potential enhancements include:
+
+* PDF generation
+* Saved estimates/projects
+* Multiple currencies
+* Tax calculations
+* Client branding
+* Dark/light themes
+* Shareable proposal links
+* Team-based estimation
+* Time tracking integration
+
+---
+
+## License
+
+This project is private and intended for educational or internal
