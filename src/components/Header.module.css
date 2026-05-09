@@ -42,3 +42,23 @@
 }
 .exportBtn:hover { opacity: 0.88; }
 .exportBtn:active { transform: scale(0.97); }
+
+.infoInputs {
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.9rem;
+  color: var(--text);
+  font-size: 0.85rem;
+  min-width: 180px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}

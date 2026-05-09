@@ -8,7 +8,7 @@ const PAYMENTS = [
   { phase: 'Final',     pct: 0.30, note: 'Due on launch, handoff, or final acceptance.' },
 ];
 
-export default function PrintView({ estimate, complexity, buffer, flHr }) {
+export default function PrintView({ estimate, complexity, buffer, flHr, clientName, projectName }) {
   const { active, totalHrs, rawCost, bufAmt, total } = estimate;
   const complexityOption = COMPLEXITY_OPTIONS.find(o => o.value === complexity);
   const tip = PAYMENT_TIPS[complexity] || '';
@@ -24,6 +24,13 @@ export default function PrintView({ estimate, complexity, buffer, flHr }) {
         </div>
         <div style={{ textAlign: 'right', fontSize: '0.75rem', color: '#888' }}>
           Generated: {generated}
+        </div>
+      </div>
+
+      <div className="print-section">
+        <div className="print-label">Client/Project</div>
+        <div className="print-title">
+          Client: {clientName} | Project: {projectName || "--------"}
         </div>
       </div>
 

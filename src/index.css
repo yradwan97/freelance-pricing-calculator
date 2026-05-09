@@ -55,6 +55,35 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 @media print {
   @page { margin: 1.8cm; size: A4; }
 
+   /* hide entire app */
+  body * {
+    visibility: hidden;
+  }
+
+  /* show only print view */
+  #print-view,
+  #print-view * {
+    visibility: visible;
+  }
+
+  #print-view {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: white;
+    color: #111;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
   body { background: #fff !important; color: #111 !important; }
 
   .no-print { display: none !important; }

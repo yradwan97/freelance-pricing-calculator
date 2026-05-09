@@ -51,6 +51,8 @@ export function usePricing() {
   const [buffer,     setBuffer]     = useState(25);
   const [complexity, setComplexity] = useState(1.0);
   const [modules,    setModules]    = useState(DEFAULT_MODULES);
+  const [clientName, setClientName] = useState('');
+  const [projectName, setProjectName] = useState('Web Application Development');
 
   // Derived rate values
   const ftHr    = salary / 160;
@@ -110,5 +112,7 @@ export function usePricing() {
     modules, toggleModule, updateModuleHrs, addModule, removeModule, selectAll, clearAll,
     // Estimate
     estimate,
+    clientName, setClientName,
+    projectName, setProjectName
   };
 }

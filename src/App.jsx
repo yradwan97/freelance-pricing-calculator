@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      <Header onExport={handleExport} />
+      <Header onExport={handleExport} clientName={pricing.clientName} setClientName={pricing.setClientName} projectName={pricing.projectName} setProjectName={pricing.setProjectName} />
 
       <main className={styles.main}>
         <RateSection
@@ -71,6 +71,8 @@ export default function App() {
         complexity={pricing.complexity}
         buffer={pricing.buffer}
         flHr={pricing.flHr}
+        clientName={pricing.clientName}
+        projectName={pricing.projectName}
       />
     </>
   );
