@@ -42,6 +42,7 @@
 }
 .exportBtn:hover { opacity: 0.88; }
 .exportBtn:active { transform: scale(0.97); }
+.exportBtn:disabled { opacity: 0.6; cursor: default; pointer-events: none; }
 
 .infoInputs {
   display: flex;

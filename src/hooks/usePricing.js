@@ -13,6 +13,28 @@ const DEFAULT_MODULES = [
   { id: 'deploy',    name: 'Deployment & CI setup',   hrs: 8,  active: false },
 ];
 
+const DEFAULT_PAYMENTS = [
+  {
+    id: "deposit",
+    phase: "Deposit",
+    pct: 30,
+    note: "Due before any work begins. Non-refundable.",
+  },
+  {
+    id: "milestone",
+    phase: "Milestone",
+    pct: 40,
+    note: "Due on core feature delivery / working demo.",
+    featured: true,
+  },
+  {
+    id: "final",
+    phase: "Final",
+    pct: 30,
+    note: "Due on launch, handoff, or final acceptance.",
+  },
+];
+
 export const COMPLEXITY_OPTIONS = [
   {
     value: 1.0,
@@ -53,6 +75,7 @@ export function usePricing() {
   const [modules,    setModules]    = useState(DEFAULT_MODULES);
   const [clientName, setClientName] = useState('');
   const [projectName, setProjectName] = useState('Web Application Development');
+  const [payments, setPayments] = useState(DEFAULT_PAYMENTS);
 
   // Derived rate values
   const ftHr    = salary / 160;
@@ -99,6 +122,82 @@ export function usePricing() {
 
   const complexityOption = COMPLEXITY_OPTIONS.find(o => o.value === complexity);
 
+  const updatePayment = useCallback((id, field, value) => {
+  setPayments(prev =>
+    prev.map(p =>
+      p.id === id
+        ? {
+            ...p,
+            [field]:
+              field === "pct"
+                ? Math.max(0, Number(value) || 0)
+                : value,
+          }
+        : p
+    )
+  );
+}, []);
+
+const addPayment = useCallback(() => {
+  setPayments(prev => [
+    ...prev,
+    {
+      id: `payment_${Date.now()}`,
+      phase: `Payment ${prev.length + 1}`,
+      pct: 0,
+      note: "",
+    },
+  ]);
+}, []);
+
+const removePayment = useCallback((id) => {
+  setPayments(prev => prev.filter(p => p.id !== id));
+}, []);
+
+const equalizePayments = useCallback(() => {
+  setPayments(prev => {
+    if (!prev.length) return prev;
+
+    const equal = Math.floor((100 / prev.length) * 100) / 100;
+
+    const result = prev.map(p => ({
+      ...p,
+      pct: equal,
+    }));
+
+    const total = result.reduce((s, p) => s + p.pct, 0);
+
+    result[result.length - 1].pct += +(100 - total).toFixed(2);
+
+    return result;
+  });
+}, []);
+
+const paymentTotalPct = useMemo(
+  () => payments.reduce((sum, p) => sum + Number(p.pct || 0), 0),
+  [payments]
+);
+
+const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
+
+const applyParsedModules = useCallback((parsedModules) => {
+  setModules(prev => {
+    const existingIds = new Set(prev.map(m => m.id));
+    const newModules = parsedModules.filter(m => !existingIds.has(m.id));
+
+    return [
+      ...prev.map(existing => {
+        const match = parsedModules.find(p => 
+          p.name.toLowerCase().includes(existing.name.toLowerCase().slice(0, 8)) ||
+          existing.name.toLowerCase().includes(p.name.toLowerCase().slice(0, 8))
+        );
+        return match ? { ...existing, hrs: match.hrs, active: true } : existing;
+      }),
+      ...newModules
+    ];
+  });
+}, []);
+
   return {
     // Rate inputs
     salary, setSalary,
@@ -113,6 +212,14 @@ export function usePricing() {
     // Estimate
     estimate,
     clientName, setClientName,
-    projectName, setProjectName
+    projectName, setProjectName,
+    payments,
+    updatePayment,
+    addPayment,
+    removePayment,
+    equalizePayments,
+    paymentTotalPct,
+    isPaymentValid,
+    applyParsedModules
   };
 }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { usePricing } from './hooks/usePricing';
 import Header from './components/Header';
 import RateSection from './components/RateSection';
@@ -6,25 +6,35 @@ import ModulesSection from './components/ModulesSection';
 import ComplexitySection from './components/ComplexitySection';
 import EstimateSection from './components/EstimateSection';
 import PaymentSection from './components/PaymentSection';
-import PrintView from './components/PrintView';
+import { exportEstimatePdf } from './pdfExport';
 import styles from './App.module.css';
 
 export default function App() {
   const pricing = usePricing();
+  const [exporting, setExporting] = useState(false);
 
-  const handleExport = useCallback(() => {
-    // Show print-view, trigger print, then hide it again
-    const el = document.getElementById('print-view');
-    if (el) {
-      el.style.display = 'block';
-      window.print();
-      el.style.display = 'none';
+  const handleExport = useCallback(async () => {
+    setExporting(true);
+    try {
+      // Yield a frame so the button can show its busy state before the
+      // (synchronous, occasionally chunky) PDF draw call runs.
+      await new Promise(requestAnimationFrame);
+      exportEstimatePdf({
+        estimate: pricing.estimate,
+        complexity: pricing.complexity,
+        buffer: pricing.buffer,
+        clientName: pricing.clientName,
+        projectName: pricing.projectName,
+        payments: pricing.payments
+      });
+    } finally {
+      setExporting(false);
     }
-  }, []);
+  }, [pricing.estimate, pricing.complexity, pricing.buffer, pricing.clientName, pricing.projectName, pricing.payments]);
 
   return (
     <>
-      <Header onExport={handleExport} clientName={pricing.clientName} setClientName={pricing.setClientName} projectName={pricing.projectName} setProjectName={pricing.setProjectName} />
+      <Header onExport={handleExport} exporting={exporting} clientName={pricing.clientName} setClientName={pricing.setClientName} projectName={pricing.projectName} setProjectName={pricing.setProjectName} />
 
       <main className={styles.main}>
         <RateSection
@@ -62,18 +72,15 @@ export default function App() {
         <PaymentSection
           total={pricing.estimate.total}
           complexity={pricing.complexity}
+          payments={pricing.payments}
+          updatePayment={pricing.updatePayment}
+          addPayment={pricing.addPayment}
+          removePayment={pricing.removePayment}
+          equalizePayments={pricing.equalizePayments}
+          paymentTotalPct={pricing.paymentTotalPct}
+          isPaymentValid={pricing.isPaymentValid}
         />
       </main>
-
-      {/* Off-screen print-only view */}
-      <PrintView
-        estimate={pricing.estimate}
-        complexity={pricing.complexity}
-        buffer={pricing.buffer}
-        flHr={pricing.flHr}
-        clientName={pricing.clientName}
-        projectName={pricing.projectName}
-      />
     </>
   );
 }

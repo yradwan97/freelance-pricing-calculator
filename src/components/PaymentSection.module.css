@@ -1,60 +1,273 @@
-.section {}
-.label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
-.title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
 
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  height: 42px;
+  border-radius: 10px;
+  padding: 0 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.primaryBtn:hover,
+.secondaryBtn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.primaryBtn {
+  background: rgba(200, 249, 127, 0.08);
+}
+
+.validationWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.totalBadge {
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.valid {
+  color: #8ef39b;
+  background: rgba(30, 180, 80, 0.12);
+  border: 1px solid rgba(30, 180, 80, 0.25);
+}
+
+.invalid {
+  color: #ff8b8b;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.validationError {
+  font-size: 0.85rem;
+  color: #ff8b8b;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
 
 .card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 1.25rem 1rem;
-  text-align: center;
-  position: relative;
-}
-.card.featured { border-color: rgba(200,249,127,0.4); background: rgba(200,249,127,0.04); }
-
-.badge {
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent);
-  color: var(--accent-text);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 2px 10px;
-  border-radius: 0 0 6px 6px;
-  white-space: nowrap;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+  transition: border-color 0.2s ease;
 }
 
-.phase {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.card:hover {
+  border-color: rgba(200, 249, 127, 0.25);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.phaseInput {
+  flex: 1;
+  height: 42px;
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.phaseInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.removeBtn {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
   color: var(--text-muted);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.pct { font-size: 2rem; font-weight: 700; letter-spacing: -0.04em; color: var(--text); line-height: 1; margin-bottom: 0.4rem; }
-.featured .pct { color: var(--accent); }
-.amount { font-family: var(--font-mono); font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-.note { font-size: 0.7rem; color: var(--text-dim); line-height: 1.5; }
 
-.tip {
+.removeBtn:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.percentInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.percentInput {
+  width: 120px;
+  height: 42px;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.percentInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.percentSign {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.amount {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.noteInput {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+
+  background: rgba(255,255,255,0.02);
+  color: var(--text);
+
+  padding: 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.noteInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}
+
+.tipBox {
   padding: 1rem 1.25rem;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius-md);
-  font-size: 0.82rem;
+
   color: var(--text-muted);
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-@media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
+.tipTitle {
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    flex: 1;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
