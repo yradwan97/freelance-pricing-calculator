@@ -77,6 +77,7 @@ export default function App() {
           addPayment={pricing.addPayment}
           removePayment={pricing.removePayment}
           equalizePayments={pricing.equalizePayments}
+          equalizeOtherPayments={pricing.equalizeOtherPayments}
           paymentTotalPct={pricing.paymentTotalPct}
           isPaymentValid={pricing.isPaymentValid}
         />

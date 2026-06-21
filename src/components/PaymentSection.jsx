@@ -11,6 +11,7 @@ export default function PaymentSection({
   addPayment,
   removePayment,
   equalizePayments,
+  equalizeOtherPayments,
   paymentTotalPct,
   isPaymentValid,
 }) {
@@ -34,7 +35,7 @@ export default function PaymentSection({
             className={styles.secondaryBtn}
             onClick={equalizePayments}
           >
-            Equalize %
+            Equalize All
           </button>
 
           <button
@@ -48,11 +49,7 @@ export default function PaymentSection({
       </div>
 
       <div className={styles.validationWrapper}>
-        <div
-          className={`${styles.totalBadge} ${
-            isPaymentValid ? styles.valid : styles.invalid
-          }`}
-        >
+        <div className={`${styles.totalBadge} ${isPaymentValid ? styles.valid : styles.invalid}`}>
           Total: {paymentTotalPct.toFixed(2)}%
         </div>
 
@@ -71,9 +68,7 @@ export default function PaymentSection({
                 value={payment.phase}
                 className={styles.phaseInput}
                 placeholder="Payment Name"
-                onChange={(e) =>
-                  updatePayment(payment.id, "phase", e.target.value)
-                }
+                onChange={(e) => updatePayment(payment.id, "phase", e.target.value)}
               />
 
               {payments.length > 1 && (
@@ -87,9 +82,20 @@ export default function PaymentSection({
               )}
             </div>
 
+            {/* Hover Button - Equalize Others */}
+            {payments.length > 1 && (
+              <button
+                type="button"
+                className={styles.equalizeOthersBtn}
+                onClick={() => equalizeOtherPayments(payment.id)}
+                title="Keep this percentage and equalize the rest"
+              >
+                Equalize Others
+              </button>
+            )}
+
             <div className={styles.row}>
               <label>Percentage</label>
-
               <div className={styles.percentInputWrapper}>
                 <input
                   type="number"
@@ -98,18 +104,14 @@ export default function PaymentSection({
                   step="0.01"
                   value={payment.pct}
                   className={styles.percentInput}
-                  onChange={(e) =>
-                    updatePayment(payment.id, "pct", e.target.value)
-                  }
+                  onChange={(e) => updatePayment(payment.id, "pct", e.target.value)}
                 />
-
                 <span className={styles.percentSign}>%</span>
               </div>
             </div>
 
             <div className={styles.row}>
               <label>Amount</label>
-
               <div className={styles.amount}>
                 {fmt(total * (payment.pct / 100))}
               </div>
@@ -117,15 +119,12 @@ export default function PaymentSection({
 
             <div className={styles.row}>
               <label>Notes</label>
-
               <textarea
                 rows={4}
                 className={styles.noteInput}
                 value={payment.note}
                 placeholder="Describe when this payment becomes due..."
-                onChange={(e) =>
-                  updatePayment(payment.id, "note", e.target.value)
-                }
+                onChange={(e) => updatePayment(payment.id, "note", e.target.value)}
               />
             </div>
 

@@ -173,6 +173,42 @@ const equalizePayments = useCallback(() => {
   });
 }, []);
 
+const equalizeOtherPayments = useCallback((currentId) => {
+    setPayments(prev => {
+      if (prev.length <= 1) return prev;
+
+      const currentPayment = prev.find(p => p.id === currentId);
+      if (!currentPayment) return prev;
+
+      const remainingPct = 100 - Number(currentPayment.pct);
+      const otherCount = prev.length - 1;
+      const equalShare = Number((remainingPct / otherCount).toFixed(2));
+
+      let updated = prev.map(payment => {
+        if (payment.id === currentId) {
+          return payment; // keep this one unchanged
+        }
+        return { ...payment, pct: equalShare };
+      });
+
+      // Ensure total is exactly 100%
+      const currentTotal = updated.reduce((sum, p) => sum + p.pct, 0);
+      const diff = Number((100 - currentTotal).toFixed(2));
+
+      if (diff !== 0) {
+        const lastOtherIndex = updated.findIndex(p => p.id !== currentId);
+        if (lastOtherIndex !== -1) {
+          updated[lastOtherIndex] = {
+            ...updated[lastOtherIndex],
+            pct: Number((updated[lastOtherIndex].pct + diff).toFixed(2))
+          };
+        }
+      }
+
+      return updated;
+    });
+  }, []);
+
 const paymentTotalPct = useMemo(
   () => payments.reduce((sum, p) => sum + Number(p.pct || 0), 0),
   [payments]
@@ -218,6 +254,7 @@ const applyParsedModules = useCallback((parsedModules) => {
     addPayment,
     removePayment,
     equalizePayments,
+    equalizeOtherPayments,
     paymentTotalPct,
     isPaymentValid,
     applyParsedModules

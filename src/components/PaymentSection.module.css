@@ -111,6 +111,7 @@
   gap: 1rem;
   min-height: 100%;
   transition: border-color 0.2s ease;
+  position: relative; /* Important for absolute positioning of button */
 }
 
 .card:hover {
@@ -121,6 +122,37 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* === Equalize Others Button === */
+.equalizeOthersBtn {
+  position: absolute;
+  top: -10px;
+  right: 4px;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  padding: 5px 11px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.card:hover .equalizeOthersBtn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.equalizeOthersBtn:hover {
+  background: #b0f15a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(200, 249, 127, 0.3);
 }
 
 .phaseInput {
@@ -208,13 +240,10 @@
   width: 100%;
   min-height: 100px;
   resize: vertical;
-
   border-radius: 10px;
   border: 1px solid var(--border);
-
   background: rgba(255,255,255,0.02);
   color: var(--text);
-
   padding: 0.75rem;
   font-size: 0.88rem;
   line-height: 1.5;
@@ -230,7 +259,6 @@
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
-
   text-align: center;
   color: var(--text-dim);
   font-size: 0.78rem;
@@ -242,7 +270,6 @@
   border: 1px solid var(--border);
   border-left: 4px solid var(--accent);
   border-radius: var(--radius-md);
-
   color: var(--text-muted);
   line-height: 1.7;
 }
@@ -269,5 +296,12 @@
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .equalizeOthersBtn {
+    position: static;
+    opacity: 1;
+    margin-top: 8px;
+    align-self: flex-start;
   }
 }
