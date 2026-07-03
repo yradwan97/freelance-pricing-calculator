@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { fmt } from '../utils';
+import { formatCurrency } from '../utils';
 import styles from './ModulesSection.module.css';
 
-export default function ModulesSection({ modules, flHr, toggleModule, updateModuleHrs, addModule, removeModule, selectAll, clearAll }) {
+export default function ModulesSection({ modules, flHr, currency, toggleModule, updateModuleHrs, addModule, removeModule, selectAll, clearAll }) {
   const [showModal, setShowModal] = useState(false);
   const [newName,   setNewName]   = useState('');
   const [newHrs,    setNewHrs]    = useState('');
@@ -67,7 +67,7 @@ export default function ModulesSection({ modules, flHr, toggleModule, updateModu
               />
               <span className={styles.hrsLabel}>hrs</span>
             </div>
-            <div className={styles.cost}>{fmt(mod.hrs * flHr)}</div>
+            <div className={styles.cost}>{formatCurrency(mod.hrs * flHr, currency)}</div>
             <button
               className={styles.deleteBtn}
               title="Remove module"

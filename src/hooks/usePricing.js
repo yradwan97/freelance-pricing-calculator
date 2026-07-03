@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
 const DEFAULT_MODULES = [
   { id: 'auth',      name: 'Auth & user management',  hrs: 20, active: true  },
@@ -35,6 +35,120 @@ const DEFAULT_PAYMENTS = [
   },
 ];
 
+const STORAGE_KEY = 'devpricer.pricingState.v1';
+const DRAFTS_KEY = 'devpricer.drafts.v1';
+const STORAGE_VERSION = 1;
+
+function loadPersistedState() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return {};
+    const parsed = JSON.parse(stored);
+
+    // Validate and extract each field individually for robustness
+    const result = {};
+
+    if (typeof parsed.salary === 'number' && parsed.salary > 0) {
+      result.salary = parsed.salary;
+    }
+    if (typeof parsed.mult === 'number' && parsed.mult > 0) {
+      result.mult = parsed.mult;
+    }
+    if (typeof parsed.buffer === 'number' && parsed.buffer >= 0) {
+      result.buffer = parsed.buffer;
+    }
+    if (typeof parsed.complexity === 'number') {
+      result.complexity = parsed.complexity;
+    }
+    if (typeof parsed.clientName === 'string') {
+      result.clientName = parsed.clientName;
+    }
+    if (typeof parsed.projectName === 'string') {
+      result.projectName = parsed.projectName;
+    }
+    if (Array.isArray(parsed.modules)) {
+      result.modules = parsed.modules.filter(m =>
+        m && typeof m === 'object' && m.id && typeof m.name === 'string' && typeof m.hrs === 'number' && typeof m.active === 'boolean'
+      );
+    }
+    if (Array.isArray(parsed.payments)) {
+      result.payments = parsed.payments.filter(p =>
+        p && typeof p === 'object' && p.id && typeof p.phase === 'string' && typeof p.pct === 'number'
+      );
+    }
+    if (typeof parsed.currency === 'string') {
+      result.currency = parsed.currency;
+    }
+
+    return result;
+  } catch (e) {
+    console.warn('Failed to load persisted state:', e);
+    return {};
+  }
+}
+
+function persistState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: STORAGE_VERSION, ...state }));
+  } catch (e) {
+    console.warn('Failed to persist state:', e);
+  }
+}
+
+function getStateSnapshot(state) {
+  return {
+    salary: state.salary,
+    mult: state.mult,
+    buffer: state.buffer,
+    complexity: state.complexity,
+    modules: state.modules,
+    clientName: state.clientName,
+    projectName: state.projectName,
+    payments: state.payments,
+    currency: state.currency,
+  };
+}
+
+function getSavedDrafts() {
+  try {
+    const stored = localStorage.getItem(DRAFTS_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    console.warn('Failed to load drafts:', e);
+    return [];
+  }
+}
+
+function saveDraftToStorage(name, state) {
+  try {
+    const drafts = getSavedDrafts();
+    const newDraft = {
+      id: Date.now(),
+      name: name || `Draft ${new Date().toLocaleDateString()}`,
+      createdAt: new Date().toISOString(),
+      data: state,
+    };
+    drafts.push(newDraft);
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    return newDraft;
+  } catch (e) {
+    console.warn('Failed to save draft:', e);
+    return null;
+  }
+}
+
+function deleteDraftFromStorage(draftId) {
+  try {
+    const drafts = getSavedDrafts();
+    const filtered = drafts.filter(d => d.id !== draftId);
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(filtered));
+  } catch (e) {
+    console.warn('Failed to delete draft:', e);
+  }
+}
+
 export const COMPLEXITY_OPTIONS = [
   {
     value: 1.0,
@@ -68,14 +182,21 @@ export const PAYMENT_TIPS = {
 let _idCounter = 1;
 
 export function usePricing() {
-  const [salary,     setSalary]     = useState(30000);
-  const [mult,       setMult]       = useState(2.5);
-  const [buffer,     setBuffer]     = useState(25);
-  const [complexity, setComplexity] = useState(1.0);
-  const [modules,    setModules]    = useState(DEFAULT_MODULES);
-  const [clientName, setClientName] = useState('');
-  const [projectName, setProjectName] = useState('Web Application Development');
-  const [payments, setPayments] = useState(DEFAULT_PAYMENTS);
+  const persistedRef = useRef(null);
+  if (persistedRef.current === null) {
+    persistedRef.current = loadPersistedState();
+  }
+  const persisted = persistedRef.current;
+
+  const [salary,     setSalary]     = useState(persisted.salary ?? 30000);
+  const [mult,       setMult]       = useState(persisted.mult ?? 2.5);
+  const [buffer,     setBuffer]     = useState(persisted.buffer ?? 25);
+  const [complexity, setComplexity] = useState(persisted.complexity ?? 1.0);
+  const [modules,    setModules]    = useState(persisted.modules ?? DEFAULT_MODULES);
+  const [clientName, setClientName] = useState(persisted.clientName ?? '');
+  const [projectName, setProjectName] = useState(persisted.projectName ?? 'Web Application Development');
+  const [payments, setPayments] = useState(persisted.payments ?? DEFAULT_PAYMENTS);
+  const [currency, setCurrency] = useState(persisted.currency ?? 'EGP');
 
   // Derived rate values
   const ftHr    = salary / 160;
@@ -216,23 +337,116 @@ const paymentTotalPct = useMemo(
 
 const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
 
-const applyParsedModules = useCallback((parsedModules) => {
-  setModules(prev => {
-    const existingIds = new Set(prev.map(m => m.id));
-    const newModules = parsedModules.filter(m => !existingIds.has(m.id));
+  // Immediate persistence effect - save on every change
+  useEffect(() => {
+    persistState({
+      salary,
+      mult,
+      buffer,
+      complexity,
+      modules,
+      clientName,
+      projectName,
+      payments,
+      currency,
+    });
+  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency]);
 
-    return [
-      ...prev.map(existing => {
-        const match = parsedModules.find(p => 
-          p.name.toLowerCase().includes(existing.name.toLowerCase().slice(0, 8)) ||
-          existing.name.toLowerCase().includes(p.name.toLowerCase().slice(0, 8))
-        );
-        return match ? { ...existing, hrs: match.hrs, active: true } : existing;
-      }),
-      ...newModules
-    ];
-  });
-}, []);
+  const saveDraft = useCallback((draftName) => {
+    const snapshot = getStateSnapshot({
+      salary,
+      mult,
+      buffer,
+      complexity,
+      modules,
+      clientName,
+      projectName,
+      payments,
+      currency,
+    });
+
+    if (draftName) {
+      // Save to localStorage drafts list with a name
+      saveDraftToStorage(draftName, snapshot);
+    } else {
+      // Download as JSON file
+      const json = JSON.stringify(snapshot, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `quote-${clientName || 'unnamed'}-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency]);
+
+  const loadDraft = useCallback((file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+
+        // Validate and restore each field, falling back to current if invalid
+        if (typeof parsed.salary === 'number' && parsed.salary > 0) setSalary(parsed.salary);
+        if (typeof parsed.mult === 'number' && parsed.mult > 0) setMult(parsed.mult);
+        if (typeof parsed.buffer === 'number' && parsed.buffer >= 0) setBuffer(parsed.buffer);
+        if (typeof parsed.complexity === 'number') setComplexity(parsed.complexity);
+        if (typeof parsed.clientName === 'string') setClientName(parsed.clientName);
+        if (typeof parsed.projectName === 'string') setProjectName(parsed.projectName);
+        if (Array.isArray(parsed.modules) && parsed.modules.length > 0 && parsed.modules[0].id) {
+          setModules(parsed.modules);
+        }
+        if (Array.isArray(parsed.payments) && parsed.payments.length > 0 && parsed.payments[0].id) {
+          setPayments(parsed.payments);
+        }
+        if (typeof parsed.currency === 'string') setCurrency(parsed.currency);
+      } catch (err) {
+        console.error('Failed to load draft:', err);
+        alert('Failed to load draft. File may be corrupted.');
+      }
+    };
+    reader.readAsText(file);
+  }, []);
+
+  const loadDraftFromStorage = useCallback((draft) => {
+    const data = draft.data;
+    if (typeof data.salary === 'number' && data.salary > 0) setSalary(data.salary);
+    if (typeof data.mult === 'number' && data.mult > 0) setMult(data.mult);
+    if (typeof data.buffer === 'number' && data.buffer >= 0) setBuffer(data.buffer);
+    if (typeof data.complexity === 'number') setComplexity(data.complexity);
+    if (typeof data.clientName === 'string') setClientName(data.clientName);
+    if (typeof data.projectName === 'string') setProjectName(data.projectName);
+    if (Array.isArray(data.modules) && data.modules.length > 0 && data.modules[0].id) {
+      setModules(data.modules);
+    }
+    if (Array.isArray(data.payments) && data.payments.length > 0 && data.payments[0].id) {
+      setPayments(data.payments);
+    }
+    if (typeof data.currency === 'string') setCurrency(data.currency);
+  }, []);
+
+  const getSavedDraftsCallback = useCallback(() => {
+    return getSavedDrafts();
+  }, []);
+
+  const deleteDraft = useCallback((draftId) => {
+    deleteDraftFromStorage(draftId);
+  }, []);
+
+  const resetAllToDefaults = useCallback(() => {
+    setSalary(30000);
+    setMult(2.5);
+    setBuffer(25);
+    setComplexity(1.0);
+    setModules(DEFAULT_MODULES);
+    setClientName('');
+    setProjectName('Web Application Development');
+    setPayments(DEFAULT_PAYMENTS);
+    setCurrency('EGP');
+  }, []);
 
   return {
     // Rate inputs
@@ -257,6 +471,11 @@ const applyParsedModules = useCallback((parsedModules) => {
     equalizeOtherPayments,
     paymentTotalPct,
     isPaymentValid,
-    applyParsedModules
+    // Currency
+    currency, setCurrency,
+    // Draft save/load
+    saveDraft, loadDraft, loadDraftFromStorage, getSavedDraftsCallback, deleteDraft,
+    // Reset
+    resetAllToDefaults,
   };
 }

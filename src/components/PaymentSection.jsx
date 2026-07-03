@@ -1,5 +1,5 @@
 import React from "react";
-import { fmt } from "../utils";
+import { formatCurrency } from "../utils";
 import { PAYMENT_TIPS } from "../hooks/usePricing";
 import styles from "./PaymentSection.module.css";
 
@@ -7,6 +7,7 @@ export default function PaymentSection({
   total,
   complexity,
   payments,
+  currency,
   updatePayment,
   addPayment,
   removePayment,
@@ -113,7 +114,7 @@ export default function PaymentSection({
             <div className={styles.row}>
               <label>Amount</label>
               <div className={styles.amount}>
-                {fmt(total * (payment.pct / 100))}
+                {formatCurrency(total * (payment.pct / 100), currency)}
               </div>
             </div>
 

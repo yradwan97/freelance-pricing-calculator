@@ -50,7 +50,9 @@
 
   <meta property="og:type" content="website" />
 
-  <meta property="og:image" content="%PUBLIC_URL%/og-cover.png" />
+  <!-- TODO: supply public/og-cover.png (1200x630 PNG/JPG) then restore:
+       <meta property="og:image" content="%PUBLIC_URL%/og-cover.png" />
+       and change twitter:card back to summary_large_image -->
 
   <!-- Twitter -->
   <meta
@@ -63,8 +65,7 @@
     content="A modern freelance pricing calculator built with React."
   />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="%PUBLIC_URL%/og-cover.png" />
+  <meta name="twitter:card" content="summary" />
 
   <!-- PWA -->
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />

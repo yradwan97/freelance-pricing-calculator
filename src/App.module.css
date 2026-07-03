@@ -1,12 +1,59 @@
 .main {
   max-width: 880px;
   margin: 0 auto;
-  padding: 3.5rem 2rem 7rem;
+  padding: 2.5rem 2rem 7rem;
   display: flex;
   flex-direction: column;
   gap: 4.5rem;
 }
 
+.clientSection {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.clientGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.clientField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.clientLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.clientInput {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+}
+
+.clientInput::placeholder {
+  color: var(--text-dim);
+}
+
+.clientInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(200, 249, 127, 0.1);
+}
+
 @media (max-width: 680px) {
   .main { padding: 2rem 1rem 5rem; gap: 3rem; }
+  .clientGrid { grid-template-columns: 1fr; gap: 1.5rem; }
 }

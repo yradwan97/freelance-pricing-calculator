@@ -6,7 +6,7 @@
 
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { fmt } from './utils';
+import { formatCurrency } from './utils';
 import { COMPLEXITY_OPTIONS, PAYMENT_TIPS } from './hooks/usePricing';
 
 const PAGE_W   = 210; // A4 mm
@@ -129,11 +129,11 @@ const tableTheme = {
   alternateRowStyles: { fillColor: [249, 249, 250] },
 };
 
-function drawModulesTable(doc, y, active, totalHrs, rawCost) {
+function drawModulesTable(doc, y, active, totalHrs, rawCost, currency) {
   const rows = active.map(m => [
     m.name,
     String(m.hrs),
-    fmt(m.hrs * (rawCost / totalHrs)),
+    formatCurrency(m.hrs * (rawCost / totalHrs), currency),
   ]);
 
   autoTable(doc, {
@@ -141,7 +141,7 @@ function drawModulesTable(doc, y, active, totalHrs, rawCost) {
     margin: { left: MARGIN, right: MARGIN, bottom: FOOTER_RESERVE + 6 },
     head: [['Module', 'Hours', 'Cost']],
     body: rows,
-    foot: [['Total', String(totalHrs), fmt(rawCost)]],
+    foot: [['Total', String(totalHrs), formatCurrency(rawCost, currency)]],
     showFoot: 'lastPage',
     ...tableTheme,
     footStyles: {
@@ -161,14 +161,14 @@ function drawModulesTable(doc, y, active, totalHrs, rawCost) {
   return doc.lastAutoTable.finalY;
 }
 
-function drawCostSummary(doc, y, { totalHrs, complexityOption, complexity, buffer, bufAmt, total }) {
+function drawCostSummary(doc, y, { totalHrs, complexityOption, complexity, buffer, bufAmt, total, currency }) {
   const boxX = MARGIN;
   const boxW = CONTENT_W;
   const lineH = 7;
   const rows = [
     ['Total hours', `${totalHrs} hrs`],
     ['Complexity', `${complexityOption?.label ?? '—'}  ×${complexity.toFixed(1)}`],
-    ['Scope buffer', `+${buffer}%   ->   ${fmt(bufAmt)}`],
+    ['Scope buffer', `+${buffer}%   ->   ${formatCurrency(bufAmt, currency)}`],
   ];
 
   const padTop = 6, padBottom = 8;
@@ -204,16 +204,16 @@ function drawCostSummary(doc, y, { totalHrs, complexityOption, complexity, buffe
   doc.setTextColor(...INK);
   doc.text('Total project price', boxX + 6, ry);
   doc.setFontSize(14);
-  doc.text(fmt(total), boxX + boxW - 6, ry, { align: 'right' });
+  doc.text(formatCurrency(total, currency), boxX + boxW - 6, ry, { align: 'right' });
 
   return y + boxH;
 }
 
-function drawPaymentTable(doc, y, total, payments) {
+function drawPaymentTable(doc, y, total, payments, currency) {
   const rows = payments.map((p) => [
     p.phase,
     `${Number(p.pct).toFixed(2)}%`,
-    fmt(total * (p.pct / 100)),
+    formatCurrency(total * (p.pct / 100), currency),
     p.note || '',
   ]);
 
@@ -288,7 +288,7 @@ function addFooters(doc, projectName) {
  * inputs section — only module hours, the cost summary, and the
  * payment schedule are included.
  */
-export function buildEstimateDoc({ estimate, complexity, buffer, clientName, projectName, payments }) {
+export function buildEstimateDoc({ estimate, complexity, buffer, clientName, projectName, payments, currency }) {
   const { active, totalHrs, rawCost, bufAmt, total } = estimate;
   const complexityOption = COMPLEXITY_OPTIONS.find(o => o.value === complexity);
   const tip = PAYMENT_TIPS[complexity] || '';
@@ -308,18 +308,18 @@ export function buildEstimateDoc({ estimate, complexity, buffer, clientName, pro
     doc.text('No modules selected.', MARGIN, y + 4);
     y += 12;
   } else {
-    y = drawModulesTable(doc, y, active, totalHrs, rawCost) + 8;
+    y = drawModulesTable(doc, y, active, totalHrs, rawCost, currency) + 8;
   }
 
   // ── Cost summary ───────────────────────────────────────────────
   const summaryHeight = 6 + 3 * 7 + 13 + 8;
   y = ensureSpace(doc, y, summaryHeight);
-  y = drawCostSummary(doc, y, { totalHrs, complexityOption, complexity, buffer, bufAmt, total }) + 12;
+  y = drawCostSummary(doc, y, { totalHrs, complexityOption, complexity, buffer, bufAmt, total, currency }) + 12;
 
   // ── 02 — Payment schedule ─────────────────────────────────────
   y = ensureSpace(doc, y, 34);
   y = drawSectionLabel(doc, y, '02', 'Payment schedule');
-  y = drawPaymentTable(doc, y, total, payments) + 8;
+  y = drawPaymentTable(doc, y, total, payments, currency) + 8;
 
   if (tip) {
     const tipLineCount = doc.splitTextToSize(tip, CONTENT_W - 10).length;
