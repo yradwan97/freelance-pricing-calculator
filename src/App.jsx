@@ -35,7 +35,7 @@ export default function App() {
   }, [pricing.estimate, pricing.complexity, pricing.buffer, pricing.clientName, pricing.projectName, pricing.payments, pricing.currency]);
 
   return (
-    <Analytics>
+    <>
       <Header
         onExport={handleExport} exporting={exporting}
         saveDraft={pricing.saveDraft}
@@ -122,6 +122,7 @@ export default function App() {
           isPaymentValid={pricing.isPaymentValid}
         />
       </main>
-    </Analytics>
+      <Analytics />
+    </>
   );
 }
