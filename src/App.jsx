@@ -8,6 +8,7 @@ import EstimateSection from './components/EstimateSection';
 import PaymentSection from './components/PaymentSection';
 import { exportEstimatePdf } from './pdfExport';
 import styles from './App.module.css';
+import { Analytics } from "@vercel/analytics/react"
 
 export default function App() {
   const pricing = usePricing();
@@ -34,7 +35,7 @@ export default function App() {
   }, [pricing.estimate, pricing.complexity, pricing.buffer, pricing.clientName, pricing.projectName, pricing.payments, pricing.currency]);
 
   return (
-    <>
+    <Analytics>
       <Header
         onExport={handleExport} exporting={exporting}
         saveDraft={pricing.saveDraft}
@@ -121,6 +122,6 @@ export default function App() {
           isPaymentValid={pricing.isPaymentValid}
         />
       </main>
-    </>
+    </Analytics>
   );
 }
