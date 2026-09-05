@@ -1,0 +1,128 @@
+.guide {
+  background: linear-gradient(135deg, #1a1a1f 0%, #0e0e10 100%);
+  padding: 3rem 2rem;
+  border-bottom: 1px solid #2a2a2f;
+}
+
+.guideContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+}
+
+.intro {
+  font-size: 1rem;
+  color: #9a9aa8;
+  margin: 0 0 2.5rem 0;
+  line-height: 1.6;
+}
+
+.guideGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.guideCard {
+  background: #252530;
+  border: 1px solid #2a2a2f;
+  border-radius: 8px;
+  padding: 1.75rem;
+  transition: all 0.2s;
+}
+
+.guideCard:hover {
+  border-color: #2a9d8f;
+  background: #2a2a2f;
+  transform: translateY(-2px);
+}
+
+.cardTitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2a9d8f;
+  margin: 0 0 1rem 0;
+}
+
+.cardContent {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #b0b0b8;
+}
+
+.tips {
+  background: #252530;
+  border: 1px solid #2a2a2f;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.tipsTitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2a9d8f;
+  margin: 0 0 1.5rem 0;
+}
+
+.tipsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tipsList li {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #b0b0b8;
+  padding: 0.75rem 0 0.75rem 1.5rem;
+  position: relative;
+}
+
+.tipsList li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #2a9d8f;
+  font-weight: 600;
+}
+
+.tipsList strong {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .guide {
+    padding: 2rem 1.5rem;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .guideGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .tips {
+    padding: 1.5rem;
+  }
+
+  .tipsList li {
+    padding: 0.5rem 0 0.5rem 1.25rem;
+  }
+}

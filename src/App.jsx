@@ -1,11 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { usePricing } from './hooks/usePricing';
 import Header from './components/Header';
+import HeroSection from './components/HeroSection';
+import AdSenseUnit from './components/AdSenseUnit';
 import RateSection from './components/RateSection';
 import ModulesSection from './components/ModulesSection';
 import ComplexitySection from './components/ComplexitySection';
 import EstimateSection from './components/EstimateSection';
 import PaymentSection from './components/PaymentSection';
+import PricingGuideSection from './components/PricingGuideSection';
+import FAQSection from './components/FAQSection';
 import { exportEstimatePdf } from './pdfExport';
 import styles from './App.module.css';
 import { Analytics } from "@vercel/analytics/react"
@@ -46,6 +50,12 @@ export default function App() {
         clientName={pricing.clientName}
         projectName={pricing.projectName}
       />
+
+      <HeroSection />
+
+      <div className={styles.adContainer}>
+        <AdSenseUnit slot="1234567890" format="horizontal" />
+      </div>
 
       <main className={styles.main}>
         <section className={styles.clientSection}>
@@ -108,6 +118,10 @@ export default function App() {
           currency={pricing.currency}
         />
 
+        <div className={styles.adContainer}>
+          <AdSenseUnit slot="9876543210" format="horizontal" />
+        </div>
+
         <PaymentSection
           total={pricing.estimate.total}
           complexity={pricing.complexity}
@@ -122,6 +136,10 @@ export default function App() {
           isPaymentValid={pricing.isPaymentValid}
         />
       </main>
+
+      <PricingGuideSection />
+      <FAQSection />
+
       <Analytics />
     </>
   );

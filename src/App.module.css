@@ -53,7 +53,18 @@
   box-shadow: 0 0 0 2px rgba(200, 249, 127, 0.1);
 }
 
+.adContainer {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+  background: #0e0e10;
+  margin: 2rem 0;
+  border-top: 1px solid #2a2a2f;
+  border-bottom: 1px solid #2a2a2f;
+}
+
 @media (max-width: 680px) {
   .main { padding: 2rem 1rem 5rem; gap: 3rem; }
   .clientGrid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .adContainer { margin: 1.5rem 0; }
 }
