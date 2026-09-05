@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { formatCurrency, CURRENCY_OPTIONS } from '../utils';
 import styles from './RateSection.module.css';
 
-export default function RateSection({ salary, setSalary, mult, setMult, buffer, setBuffer, currency, setCurrency, ftHr, flHr, dayRate, resetAllToDefaults }) {
+export default function RateSection({ salary, setSalary, mult, setMult, buffer, setBuffer, currency, setCurrency, useManualRate, setUseManualRate, manualHourlyRate, setManualHourlyRate, ftHr, flHr, dayRate, resetAllToDefaults }) {
   const [showMultInfo, setShowMultInfo] = useState(false);
   const [showBufferInfo, setShowBufferInfo] = useState(false);
+  const [manualRateInput, setManualRateInput] = useState(String(manualHourlyRate));
+
+  useEffect(() => {
+    setManualRateInput(String(manualHourlyRate));
+  }, [manualHourlyRate]);
 
   return (
     <section className={styles.section}>
@@ -31,6 +36,46 @@ export default function RateSection({ salary, setSalary, mult, setMult, buffer, 
             ))}
           </select>
         </div>
+
+        <div className={styles.row}>
+          <label className={styles.rowLabel}>
+            <input
+              type="checkbox"
+              checked={useManualRate}
+              onChange={(e) => setUseManualRate(e.target.checked)}
+              className={styles.checkbox}
+            />
+            Use manual hourly rate
+          </label>
+        </div>
+
+        {useManualRate && (
+          <div className={styles.row}>
+            <label className={styles.rowLabel}>Hourly rate</label>
+            <div className={styles.numWrap}>
+              <span className={styles.currency}>{currency}</span>
+              <input
+                type="number"
+                className={styles.numInput}
+                value={manualRateInput}
+                onChange={(e) => setManualRateInput(e.target.value)}
+                onBlur={() => {
+                  const val = parseFloat(manualRateInput);
+                  if (!isNaN(val) && val > 0) {
+                    setManualHourlyRate(val);
+                  } else {
+                    setManualRateInput(String(manualHourlyRate));
+                  }
+                }}
+                min="1"
+                step="0.01"
+              />
+            </div>
+          </div>
+        )}
+
+        {!useManualRate && (
+          <>
         <SliderRow
           label="Monthly salary"
           min={10000} max={150000} step={500}
@@ -61,10 +106,12 @@ export default function RateSection({ salary, setSalary, mult, setMult, buffer, 
           setShowInfo={setShowBufferInfo}
           infoContent="Extra cost padding for scope creep and unforeseen complexity. 20-30% is typical. Protects you from underestimating."
         />
+          </>
+        )}
       </div>
 
-      <div className={styles.metrics}>
-        <MetricCard label="Fulltime hourly" value={formatCurrency(ftHr, currency)} />
+      <div className={!useManualRate ? styles.metrics : styles.metricsManual}>
+        {!useManualRate && <MetricCard label="Fulltime hourly" value={formatCurrency(ftHr, currency)} />}
         <MetricCard label="Freelance hourly" value={formatCurrency(flHr, currency)} accent />
         <MetricCard label="Day rate (8h)" value={formatCurrency(dayRate, currency)} />
       </div>

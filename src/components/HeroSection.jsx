@@ -10,13 +10,17 @@ export default function HeroSection() {
         </p>
         <p className={styles.description}>
           Stop underpricing your work. DevPricer helps freelance developers and agencies calculate
-          fair, sustainable project rates based on salary targets, complexity, and scope. Get client-ready
-          estimates in minutes.
+          fair, sustainable project rates based on salary targets, complexity, and scope. Or enter your hourly rate directly if you already know it.
+          Get client-ready estimates in minutes.
         </p>
         <div className={styles.benefits}>
           <div className={styles.benefit}>
             <span className={styles.icon}>✓</span>
             <span>Calculate rates from salary targets</span>
+          </div>
+          <div className={styles.benefit}>
+            <span className={styles.icon}>✓</span>
+            <span>Or input your hourly rate manually</span>
           </div>
           <div className={styles.benefit}>
             <span className={styles.icon}>✓</span>

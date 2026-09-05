@@ -85,6 +85,8 @@ export default function App() {
           mult={pricing.mult}       setMult={pricing.setMult}
           buffer={pricing.buffer}   setBuffer={pricing.setBuffer}
           currency={pricing.currency} setCurrency={pricing.setCurrency}
+          useManualRate={pricing.useManualRate} setUseManualRate={pricing.setUseManualRate}
+          manualHourlyRate={pricing.manualHourlyRate} setManualHourlyRate={pricing.setManualHourlyRate}
           ftHr={pricing.ftHr}
           flHr={pricing.flHr}
           dayRate={pricing.dayRate}

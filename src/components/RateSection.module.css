@@ -141,6 +141,7 @@
 }
 
 .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.metricsManual { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .metric {
   padding: 1rem 1.25rem;
   background: var(--bg-surface);
@@ -166,6 +167,14 @@
   color: var(--text);
 }
 .accent .metricVal { color: var(--accent); }
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent);
+  margin-right: 0.5rem;
+}
 
 @media (max-width: 680px) {
   .row { grid-template-columns: 1fr; gap: 0.5rem; }

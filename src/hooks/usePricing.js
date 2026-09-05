@@ -79,6 +79,12 @@ function loadPersistedState() {
     if (typeof parsed.currency === 'string') {
       result.currency = parsed.currency;
     }
+    if (typeof parsed.useManualRate === 'boolean') {
+      result.useManualRate = parsed.useManualRate;
+    }
+    if (typeof parsed.manualHourlyRate === 'number' && parsed.manualHourlyRate > 0) {
+      result.manualHourlyRate = parsed.manualHourlyRate;
+    }
 
     return result;
   } catch (e) {
@@ -106,6 +112,8 @@ function getStateSnapshot(state) {
     projectName: state.projectName,
     payments: state.payments,
     currency: state.currency,
+    useManualRate: state.useManualRate,
+    manualHourlyRate: state.manualHourlyRate,
   };
 }
 
@@ -197,10 +205,12 @@ export function usePricing() {
   const [projectName, setProjectName] = useState(persisted.projectName ?? 'Web Application Development');
   const [payments, setPayments] = useState(persisted.payments ?? DEFAULT_PAYMENTS);
   const [currency, setCurrency] = useState(persisted.currency ?? 'EGP');
+  const [useManualRate, setUseManualRate] = useState(persisted.useManualRate ?? false);
+  const [manualHourlyRate, setManualHourlyRate] = useState(persisted.manualHourlyRate ?? 100);
 
   // Derived rate values
   const ftHr    = salary / 160;
-  const flHr    = ftHr * mult;
+  const flHr    = useManualRate ? manualHourlyRate : ftHr * mult;
   const dayRate = flHr * 8;
 
   // Module operations
@@ -349,8 +359,10 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
       projectName,
       payments,
       currency,
+      useManualRate,
+      manualHourlyRate,
     });
-  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency]);
+  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency, useManualRate, manualHourlyRate]);
 
   const saveDraft = useCallback((draftName) => {
     const snapshot = getStateSnapshot({
@@ -363,6 +375,8 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
       projectName,
       payments,
       currency,
+      useManualRate,
+      manualHourlyRate,
     });
 
     if (draftName) {
@@ -381,7 +395,7 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
-  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency]);
+  }, [salary, mult, buffer, complexity, modules, clientName, projectName, payments, currency, useManualRate, manualHourlyRate]);
 
   const loadDraft = useCallback((file) => {
     const reader = new FileReader();
@@ -426,6 +440,8 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
       setPayments(data.payments);
     }
     if (typeof data.currency === 'string') setCurrency(data.currency);
+    if (typeof data.useManualRate === 'boolean') setUseManualRate(data.useManualRate);
+    if (typeof data.manualHourlyRate === 'number' && data.manualHourlyRate > 0) setManualHourlyRate(data.manualHourlyRate);
   }, []);
 
   const getSavedDraftsCallback = useCallback(() => {
@@ -446,6 +462,8 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
     setProjectName('Web Application Development');
     setPayments(DEFAULT_PAYMENTS);
     setCurrency('EGP');
+    setUseManualRate(false);
+    setManualHourlyRate(100);
   }, []);
 
   return {
@@ -453,6 +471,8 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
     salary, setSalary,
     mult,   setMult,
     buffer, setBuffer,
+    useManualRate, setUseManualRate,
+    manualHourlyRate, setManualHourlyRate,
     // Derived rates
     ftHr, flHr, dayRate,
     // Complexity
