@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { usePricing } from './hooks/usePricing';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
-import AdSenseUnit from './components/AdSenseUnit';
 import RateSection from './components/RateSection';
 import ModulesSection from './components/ModulesSection';
 import ComplexitySection from './components/ComplexitySection';
@@ -53,8 +52,7 @@ export default function App() {
 
       <HeroSection />
 
-      <div className={styles.layoutWrapper}>
-        <main className={styles.main}>
+      <main className={styles.main}>
           <section className={styles.clientSection}>
           <div className={styles.clientGrid}>
             <div className={styles.clientField}>
@@ -129,14 +127,7 @@ export default function App() {
           paymentTotalPct={pricing.paymentTotalPct}
           isPaymentValid={pricing.isPaymentValid}
         />
-        </main>
-
-        <aside className={styles.sidebar}>
-          <div className={styles.stickyAd}>
-            <AdSenseUnit slot="1234567890" format="vertical" />
-          </div>
-        </aside>
-      </div>
+      </main>
 
       <PricingGuideSection />
       <FAQSection />

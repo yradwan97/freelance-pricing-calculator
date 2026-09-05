@@ -1,5 +1,7 @@
 .main {
   max-width: 880px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 7rem;
   display: flex;
   flex-direction: column;
   gap: 4.5rem;
@@ -51,48 +53,7 @@
   box-shadow: 0 0 0 2px rgba(200, 249, 127, 0.1);
 }
 
-.layoutWrapper {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 3rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2.5rem 2rem 7rem;
-}
-
-.sidebar {
-  display: none;
-}
-
-.stickyAd {
-  position: sticky;
-  top: 100px;
-}
-
-@media (min-width: 1200px) {
-  .sidebar {
-    display: block;
-  }
-}
-
-@media (max-width: 1199px) {
-  .layoutWrapper {
-    grid-template-columns: 1fr;
-    padding: 2rem 1rem 5rem;
-  }
-
-  .sidebar {
-    display: none;
-  }
-}
-
 @media (max-width: 680px) {
-  .layoutWrapper {
-    grid-template-columns: 1fr;
-    padding: 2rem 1rem 5rem;
-    gap: 2rem;
-  }
-
-  .main { gap: 3rem; }
+  .main { padding: 2rem 1rem 5rem; gap: 3rem; }
   .clientGrid { grid-template-columns: 1fr; gap: 1.5rem; }
 }
