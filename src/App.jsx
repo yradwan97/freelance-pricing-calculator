@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { usePricing } from './hooks/usePricing';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
+import AdSenseUnit from './components/AdSenseUnit';
 import RateSection from './components/RateSection';
 import ModulesSection from './components/ModulesSection';
 import ComplexitySection from './components/ComplexitySection';
@@ -9,6 +10,7 @@ import EstimateSection from './components/EstimateSection';
 import PaymentSection from './components/PaymentSection';
 import PricingGuideSection from './components/PricingGuideSection';
 import FAQSection from './components/FAQSection';
+import FloatingAd from './components/FloatingAd';
 import { exportEstimatePdf } from './pdfExport';
 import styles from './App.module.css';
 import { Analytics } from "@vercel/analytics/react"
@@ -130,7 +132,15 @@ export default function App() {
       </main>
 
       <PricingGuideSection />
-      <FAQSection />
+
+      <div style={{ position: 'relative' }}>
+        <div className={styles.adAboveFaq}>
+          <AdSenseUnit slot="1234567890" format="horizontal" />
+        </div>
+        <FAQSection />
+      </div>
+
+      <FloatingAd />
 
       <Analytics />
     </>
