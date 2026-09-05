@@ -53,12 +53,9 @@ export default function App() {
 
       <HeroSection />
 
-      <div className={styles.adContainer}>
-        <AdSenseUnit slot="1234567890" format="horizontal" />
-      </div>
-
-      <main className={styles.main}>
-        <section className={styles.clientSection}>
+      <div className={styles.layoutWrapper}>
+        <main className={styles.main}>
+          <section className={styles.clientSection}>
           <div className={styles.clientGrid}>
             <div className={styles.clientField}>
               <label className={styles.clientLabel}>Client Name</label>
@@ -81,8 +78,9 @@ export default function App() {
               />
             </div>
           </div>
-        </section>
-        <RateSection
+          </section>
+
+          <RateSection
           salary={pricing.salary}   setSalary={pricing.setSalary}
           mult={pricing.mult}       setMult={pricing.setMult}
           buffer={pricing.buffer}   setBuffer={pricing.setBuffer}
@@ -118,10 +116,6 @@ export default function App() {
           currency={pricing.currency}
         />
 
-        <div className={styles.adContainer}>
-          <AdSenseUnit slot="9876543210" format="horizontal" />
-        </div>
-
         <PaymentSection
           total={pricing.estimate.total}
           complexity={pricing.complexity}
@@ -135,7 +129,14 @@ export default function App() {
           paymentTotalPct={pricing.paymentTotalPct}
           isPaymentValid={pricing.isPaymentValid}
         />
-      </main>
+        </main>
+
+        <aside className={styles.sidebar}>
+          <div className={styles.stickyAd}>
+            <AdSenseUnit slot="1234567890" format="vertical" />
+          </div>
+        </aside>
+      </div>
 
       <PricingGuideSection />
       <FAQSection />
