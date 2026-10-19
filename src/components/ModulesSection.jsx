@@ -12,16 +12,20 @@ export default function ModulesSection({
   removeModule,
   selectAll,
   clearAll,
+  addSubtask,
+  updateSubtask,
+  removeSubtask,
 }) {
   const [showModal, setShowModal] = useState(false);
   const [newName, setNewName] = useState("");
   const [newHrs, setNewHrs] = useState("");
   const [nameErr, setNameErr] = useState(false);
   const [hrsErr, setHrsErr] = useState(false);
+  const [focusId, setFocusId] = useState(null);
 
   function handleAdd() {
     const nameOk = newName.trim().length > 0;
-    const hrsOk = parseInt(newHrs, 10) > 0;
+    const hrsOk = parseFloat(newHrs) > 0;
     setNameErr(!nameOk);
     setHrsErr(!hrsOk);
     if (!nameOk || !hrsOk) return;
@@ -68,67 +72,152 @@ export default function ModulesSection({
       </div>
 
       <div className={styles.list}>
-        {modules.map((mod) => (
-          <div
-            key={mod.id}
-            className={`${styles.item} ${mod.active ? styles.active : ""}`}
-            onClick={() => toggleModule(mod.id)}
-          >
-            <div className={styles.checkbox}>
-              {mod.active && (
-                <svg
-                  width="9"
-                  height="9"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  viewBox="0 0 24 24"
+        {modules.map((mod) => {
+          const subtasks = mod.subtasks ?? [];
+          const hasSubtasks = subtasks.length > 0;
+
+          return (
+            <div key={mod.id} className={styles.moduleBlock}>
+              <div
+                className={`${styles.item} ${mod.active ? styles.active : ""}`}
+                onClick={() => toggleModule(mod.id)}
+              >
+                <div className={styles.checkbox}>
+                  {mod.active && (
+                    <svg
+                      width="9"
+                      height="9"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+
+                <div className={styles.modName}>
+                  <span className={styles.modNameText}>{mod.name}</span>
+                </div>
+
+                <div
+                  className={styles.hrsWrap}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
+                  <button
+                    className={styles.addSubBtn}
+                    title="Add subtask"
+                    onClick={() => setFocusId(addSubtask(mod.id))}
+                  >
+                    <svg
+                      width="11"
+                      height="11"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <input
+                    type="number"
+                    className={styles.hrsInput}
+                    value={mod.hrs}
+                    min={0.5}
+                    max={999}
+                    step={0.5}
+                    disabled={hasSubtasks}
+                    title={hasSubtasks ? "Calculated from subtasks" : undefined}
+                    onChange={(e) => updateModuleHrs(mod.id, e.target.value)}
+                  />
+                  <span className={styles.hrsLabel}>hrs</span>
+                </div>
+
+                <div className={styles.cost}>
+                  {formatCurrency(mod.hrs * flHr, currency)}
+                </div>
+
+                <button
+                  className={styles.deleteBtn}
+                  title="Remove module"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeModule(mod.id);
+                  }}
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              {hasSubtasks && (
+                <div className={styles.subPanel}>
+                  {subtasks.map((t) => (
+                    <div key={t.id} className={styles.subRow}>
+                      <input
+                        type="text"
+                        className={styles.subName}
+                        placeholder="Subtask name"
+                        value={t.name}
+                        autoFocus={t.id === focusId}
+                        onBlur={() => t.id === focusId && setFocusId(null)}
+                        onChange={(e) =>
+                          updateSubtask(mod.id, t.id, "name", e.target.value)
+                        }
+                      />
+                      <div className={styles.hrsWrap}>
+                        <input
+                          type="number"
+                          className={styles.hrsInput}
+                          value={t.hrs}
+                          min={0.5}
+                          max={999}
+                          step={0.5}
+                          onChange={(e) =>
+                            updateSubtask(mod.id, t.id, "hrs", e.target.value)
+                          }
+                        />
+                        <span className={styles.hrsLabel}>hrs</span>
+                      </div>
+                      <div className={styles.cost}>
+                        {formatCurrency(t.hrs * flHr, currency)}
+                      </div>
+                      <button
+                        className={styles.deleteBtn}
+                        title="Remove subtask"
+                        onClick={() => removeSubtask(mod.id, t.id)}
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-            <div className={styles.modName}>{mod.name}</div>
-            <div
-              className={styles.hrsWrap}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <input
-                type="number"
-                className={styles.hrsInput}
-                value={mod.hrs}
-                min={0.5}
-                max={999}
-                step={0.5}
-                onChange={(e) => updateModuleHrs(mod.id, e.target.value)}
-              />
-              <span className={styles.hrsLabel}>hrs</span>
-            </div>
-            <div className={styles.cost}>
-              {formatCurrency(mod.hrs * flHr, currency)}
-            </div>
-            <button
-              className={styles.deleteBtn}
-              title="Remove module"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeModule(mod.id);
-              }}
-            >
-              <svg
-                width="13"
-                height="13"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Add module modal */}
@@ -164,7 +253,8 @@ export default function ModulesSection({
                 type="number"
                 placeholder="e.g. 20"
                 value={newHrs}
-                min={1}
+                min={0.5}
+                step={0.5}
                 onChange={(e) => {
                   setNewHrs(e.target.value);
                   setHrsErr(false);

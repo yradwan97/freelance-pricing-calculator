@@ -1,16 +1,9 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 
 const DEFAULT_MODULES = [
-  { id: 'auth',      name: 'Auth & user management',  hrs: 20, active: true  },
-  { id: 'dashboard', name: 'Dashboard & analytics',   hrs: 25, active: false },
-  { id: 'crud',      name: 'CRUD / data tables',      hrs: 15, active: false },
-  { id: 'api',       name: 'API integration',         hrs: 18, active: true  },
-  { id: 'ui',        name: 'UI / design system',      hrs: 20, active: true  },
-  { id: 'forms',     name: 'Forms & validation',      hrs: 10, active: false },
-  { id: 'payments',  name: 'Payments module',         hrs: 20, active: false },
-  { id: 'roles',     name: 'Roles & permissions',     hrs: 14, active: false },
-  { id: 'notif',     name: 'Notifications',           hrs: 10, active: false },
-  { id: 'deploy',    name: 'Deployment & CI setup',   hrs: 8,  active: false },
+  { id: 'auth', name: 'Auth & user management', hrs: 20, active: true },
+  { id: 'api', name: 'API integration', hrs: 18, active: true },
+  { id: 'dashboard', name: 'Dashboard & analytics', hrs: 25, active: false },
 ];
 
 const DEFAULT_PAYMENTS = [
@@ -189,6 +182,15 @@ export const PAYMENT_TIPS = {
 
 let _idCounter = 1;
 
+const parseHrs = (value) => Math.max(0.5, parseFloat(value) || 0.5);
+const roundHrs = (n) => Math.round(n * 100) / 100;
+
+// If a module has subtasks, its hrs is always the sum of them
+const withSubtaskTotal = (mod) =>
+  mod.subtasks?.length
+    ? { ...mod, hrs: roundHrs(mod.subtasks.reduce((s, t) => s + t.hrs, 0)) }
+    : mod;
+
 export function usePricing() {
   const persistedRef = useRef(null);
   if (persistedRef.current === null) {
@@ -196,11 +198,11 @@ export function usePricing() {
   }
   const persisted = persistedRef.current;
 
-  const [salary,     setSalary]     = useState(persisted.salary ?? 30000);
-  const [mult,       setMult]       = useState(persisted.mult ?? 2.5);
-  const [buffer,     setBuffer]     = useState(persisted.buffer ?? 25);
+  const [salary, setSalary] = useState(persisted.salary ?? 30000);
+  const [mult, setMult] = useState(persisted.mult ?? 2.5);
+  const [buffer, setBuffer] = useState(persisted.buffer ?? 25);
   const [complexity, setComplexity] = useState(persisted.complexity ?? 1.0);
-  const [modules,    setModules]    = useState(persisted.modules ?? DEFAULT_MODULES);
+  const [modules, setModules] = useState(persisted.modules ?? DEFAULT_MODULES);
   const [clientName, setClientName] = useState(persisted.clientName ?? '');
   const [projectName, setProjectName] = useState(persisted.projectName ?? 'Web Application Development');
   const [payments, setPayments] = useState(persisted.payments ?? DEFAULT_PAYMENTS);
@@ -209,8 +211,8 @@ export function usePricing() {
   const [manualHourlyRate, setManualHourlyRate] = useState(persisted.manualHourlyRate ?? 100);
 
   // Derived rate values
-  const ftHr    = salary / 160;
-  const flHr    = useManualRate ? manualHourlyRate : ftHr * mult;
+  const ftHr = salary / 160;
+  const flHr = useManualRate ? manualHourlyRate : ftHr * mult;
   const dayRate = flHr * 8;
 
   // Module operations
@@ -219,17 +221,20 @@ export function usePricing() {
   }, []);
 
   const updateModuleHrs = useCallback((id, hrs) => {
-    const val = Math.max(1, parseInt(hrs, 10) || 1);
-    setModules(prev => prev.map(m => m.id === id ? { ...m, hrs: val } : m));
+    setModules(prev => prev.map(m =>
+      // ignore edits on modules that have subtasks (their hrs is derived)
+      m.id === id && !m.subtasks?.length ? { ...m, hrs: parseHrs(hrs) } : m
+    ));
   }, []);
 
   const addModule = useCallback((name, hrs) => {
     setModules(prev => [...prev, {
-      id:     `custom_${_idCounter++}`,
+      id: `custom_${_idCounter++}`,
       name,
-      hrs:    Math.max(1, parseInt(hrs, 10) || 1),
+      hrs: parseHrs(hrs),
       active: true,
       custom: true,
+      subtasks: [],
     }]);
   }, []);
 
@@ -237,74 +242,105 @@ export function usePricing() {
     setModules(prev => prev.filter(m => m.id !== id));
   }, []);
 
-  const selectAll  = useCallback(() => setModules(prev => prev.map(m => ({ ...m, active: true  }))), []);
-  const clearAll   = useCallback(() => setModules(prev => prev.map(m => ({ ...m, active: false }))), []);
+const addSubtask = useCallback((moduleId, name = '', hrs = 1) => {
+  const id = `sub_${Date.now()}_${_idCounter++}`;
+  setModules(prev => prev.map(m =>
+    m.id !== moduleId ? m : withSubtaskTotal({
+      ...m,
+      subtasks: [...(m.subtasks ?? []), { id, name, hrs: parseHrs(hrs) }],
+    })
+  ));
+  return id;
+}, []);
+
+  const updateSubtask = useCallback((moduleId, subId, field, value) => {
+    setModules(prev => prev.map(m =>
+      m.id !== moduleId ? m : withSubtaskTotal({
+        ...m,
+        subtasks: (m.subtasks ?? []).map(t =>
+          t.id !== subId ? t : { ...t, [field]: field === 'hrs' ? parseHrs(value) : value }
+        ),
+      })
+    ));
+  }, []);
+
+  const removeSubtask = useCallback((moduleId, subId) => {
+    setModules(prev => prev.map(m =>
+      m.id !== moduleId ? m : withSubtaskTotal({
+        ...m,
+        subtasks: (m.subtasks ?? []).filter(t => t.id !== subId),
+      })
+    ));
+  }, []);
+
+  const selectAll = useCallback(() => setModules(prev => prev.map(m => ({ ...m, active: true }))), []);
+  const clearAll = useCallback(() => setModules(prev => prev.map(m => ({ ...m, active: false }))), []);
 
   // Estimate calculations
   const estimate = useMemo(() => {
-    const active   = modules.filter(m => m.active);
+    const active = modules.filter(m => m.active);
     const totalHrs = active.reduce((s, m) => s + m.hrs, 0);
-    const rawCost  = totalHrs * flHr;
-    const afterCx  = rawCost * complexity;
-    const bufAmt   = afterCx * (buffer / 100);
-    const total    = afterCx + bufAmt;
+    const rawCost = totalHrs * flHr;
+    const afterCx = rawCost * complexity;
+    const bufAmt = afterCx * (buffer / 100);
+    const total = afterCx + bufAmt;
     return { active, totalHrs, rawCost, afterCx, bufAmt, total };
   }, [modules, flHr, complexity, buffer]);
 
   const complexityOption = COMPLEXITY_OPTIONS.find(o => o.value === complexity);
 
   const updatePayment = useCallback((id, field, value) => {
-  setPayments(prev =>
-    prev.map(p =>
-      p.id === id
-        ? {
+    setPayments(prev =>
+      prev.map(p =>
+        p.id === id
+          ? {
             ...p,
             [field]:
               field === "pct"
                 ? Math.max(0, Number(value) || 0)
                 : value,
           }
-        : p
-    )
-  );
-}, []);
+          : p
+      )
+    );
+  }, []);
 
-const addPayment = useCallback(() => {
-  setPayments(prev => [
-    ...prev,
-    {
-      id: `payment_${Date.now()}`,
-      phase: `Payment ${prev.length + 1}`,
-      pct: 0,
-      note: "",
-    },
-  ]);
-}, []);
+  const addPayment = useCallback(() => {
+    setPayments(prev => [
+      ...prev,
+      {
+        id: `payment_${Date.now()}`,
+        phase: `Payment ${prev.length + 1}`,
+        pct: 0,
+        note: "",
+      },
+    ]);
+  }, []);
 
-const removePayment = useCallback((id) => {
-  setPayments(prev => prev.filter(p => p.id !== id));
-}, []);
+  const removePayment = useCallback((id) => {
+    setPayments(prev => prev.filter(p => p.id !== id));
+  }, []);
 
-const equalizePayments = useCallback(() => {
-  setPayments(prev => {
-    if (!prev.length) return prev;
+  const equalizePayments = useCallback(() => {
+    setPayments(prev => {
+      if (!prev.length) return prev;
 
-    const equal = Math.floor((100 / prev.length) * 100) / 100;
+      const equal = Math.floor((100 / prev.length) * 100) / 100;
 
-    const result = prev.map(p => ({
-      ...p,
-      pct: equal,
-    }));
+      const result = prev.map(p => ({
+        ...p,
+        pct: equal,
+      }));
 
-    const total = result.reduce((s, p) => s + p.pct, 0);
+      const total = result.reduce((s, p) => s + p.pct, 0);
 
-    result[result.length - 1].pct += +(100 - total).toFixed(2);
+      result[result.length - 1].pct += +(100 - total).toFixed(2);
 
-    return result;
-  });
-}, []);
+      return result;
+    });
+  }, []);
 
-const equalizeOtherPayments = useCallback((currentId) => {
+  const equalizeOtherPayments = useCallback((currentId) => {
     setPayments(prev => {
       if (prev.length <= 1) return prev;
 
@@ -340,12 +376,12 @@ const equalizeOtherPayments = useCallback((currentId) => {
     });
   }, []);
 
-const paymentTotalPct = useMemo(
-  () => payments.reduce((sum, p) => sum + Number(p.pct || 0), 0),
-  [payments]
-);
+  const paymentTotalPct = useMemo(
+    () => payments.reduce((sum, p) => sum + Number(p.pct || 0), 0),
+    [payments]
+  );
 
-const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
+  const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
 
   // Immediate persistence effect - save on every change
   useEffect(() => {
@@ -469,7 +505,7 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
   return {
     // Rate inputs
     salary, setSalary,
-    mult,   setMult,
+    mult, setMult,
     buffer, setBuffer,
     useManualRate, setUseManualRate,
     manualHourlyRate, setManualHourlyRate,
@@ -496,6 +532,6 @@ const isPaymentValid = Math.abs(paymentTotalPct - 100) < 0.01;
     // Draft save/load
     saveDraft, loadDraft, loadDraftFromStorage, getSavedDraftsCallback, deleteDraft,
     // Reset
-    resetAllToDefaults,
+    resetAllToDefaults, addSubtask, updateSubtask, removeSubtask
   };
 }

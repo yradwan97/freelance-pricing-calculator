@@ -60,7 +60,16 @@
 }
 .active .checkbox { background: var(--accent); border-color: var(--accent); }
 
-.modName { font-size: 0.87rem; font-weight: 500; color: var(--text); }
+.modName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 0.87rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.modNameText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .hrsWrap { display: flex; align-items: center; gap: 5px; }
 .hrsInput {
@@ -104,7 +113,8 @@
   pointer-events: none;
   transition: color 0.15s, opacity 0.15s;
 }
-.item:hover .deleteBtn { opacity: 1; pointer-events: auto; }
+.item:hover .deleteBtn,
+.subRow:hover .deleteBtn { opacity: 1; pointer-events: auto; }
 .deleteBtn:hover { color: var(--danger); }
 
 /* Modal */
@@ -146,6 +156,78 @@
 .errMsg { font-size: 0.72rem; color: var(--danger); margin-top: 4px; display: block; }
 
 .modalActions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
+
+/* Subtasks */
+.moduleBlock { display: flex; flex-direction: column; }
+
+.subBadge {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.expandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: transform 0.15s, color 0.15s, background 0.15s;
+}
+.expandBtn:hover { color: var(--text); background: var(--bg-raised); }
+.expandBtnOpen { transform: rotate(180deg); color: var(--accent); }
+
+.hrsInput:disabled {
+  color: var(--text-muted);
+  background: transparent;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.subPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 4px 1.6rem;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 2px solid var(--border-md);
+}
+
+.subRow,
+.subAddRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.subName {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.6rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.subName:focus { border-color: var(--accent); }
+.subName::placeholder { color: var(--text-dim); }
+
+.subRow .cost { min-width: 100px; }
 
 @media (max-width: 560px) {
   .item { grid-template-columns: 18px 1fr auto auto; }

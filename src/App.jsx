@@ -110,6 +110,9 @@ export default function App() {
           removeModule={pricing.removeModule}
           selectAll={pricing.selectAll}
           clearAll={pricing.clearAll}
+          addSubtask={pricing.addSubtask}
+          updateSubtask={pricing.updateSubtask}
+          removeSubtask={pricing.removeSubtask}
         />
 
         <ComplexitySection

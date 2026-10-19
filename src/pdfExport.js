@@ -130,20 +130,43 @@ const tableTheme = {
 };
 
 function drawModulesTable(doc, y, active, totalHrs, rawCost, currency) {
-  const rows = active.map(m => [
-    m.name,
-    String(m.hrs),
-    formatCurrency(m.hrs * (rawCost / totalHrs), currency),
-  ]);
+  const rate = totalHrs > 0 ? rawCost / totalHrs : 0;
+  const body = [];
+
+  active.forEach(m => {
+    const subtasks = m.subtasks ?? [];
+    const hasSubs = subtasks.length > 0;
+
+    // Module row
+    body.push([
+      { content: m.name, styles: { fontStyle: hasSubs ? 'bold' : 'normal' } },
+      { content: String(m.hrs), styles: { fontStyle: hasSubs ? 'bold' : 'normal' } },
+      { content: formatCurrency(m.hrs * rate, currency), styles: { fontStyle: hasSubs ? 'bold' : 'normal' } },
+    ]);
+
+    // Subtask rows: indented, smaller, dimmer
+    subtasks.forEach(t => {
+      const sub = { fontSize: 8, textColor: INK_SOFT, cellPadding: { top: 2, bottom: 2, left: 3, right: 3 } };
+      body.push([
+        {
+          content: t.name?.trim() || 'Untitled subtask',
+          styles: { ...sub, cellPadding: { top: 2, bottom: 2, left: 9, right: 3 } },
+        },
+        { content: String(t.hrs), styles: sub },
+        { content: formatCurrency(t.hrs * rate, currency), styles: sub },
+      ]);
+    });
+  });
 
   autoTable(doc, {
     startY: y,
     margin: { left: MARGIN, right: MARGIN, bottom: FOOTER_RESERVE + 6 },
     head: [['Module', 'Hours', 'Cost']],
-    body: rows,
+    body,
     foot: [['Total', String(totalHrs), formatCurrency(rawCost, currency)]],
     showFoot: 'lastPage',
     ...tableTheme,
+    alternateRowStyles: {}, // striping would misalign with module/subtask grouping
     footStyles: {
       fillColor: [238, 238, 240],
       textColor: INK,

@@ -4,6 +4,7 @@ import styles from './EstimateSection.module.css';
 
 export default function EstimateSection({ estimate, complexity, complexityOption, buffer, currency }) {
   const { active, totalHrs, rawCost, bufAmt, total } = estimate;
+  const rate = totalHrs > 0 ? rawCost / totalHrs : 0;
 
   return (
     <section className={styles.section} id="estimate-section">
@@ -15,12 +16,32 @@ export default function EstimateSection({ estimate, complexity, complexityOption
           {active.length === 0 ? (
             <p className={styles.empty}>No modules selected yet.</p>
           ) : (
-            active.map(m => (
-              <div key={m.id} className={styles.modRow}>
-                <span className={styles.modName}>{m.name}</span>
-                <span className={styles.modDetail}>{m.hrs} hrs · {formatCurrency(m.hrs * (rawCost / totalHrs), currency)}</span>
-              </div>
-            ))
+            active.map(m => {
+              const subtasks = m.subtasks ?? [];
+              return (
+                <div key={m.id} className={styles.modGroup}>
+                  <div className={styles.modRow}>
+                    <span className={styles.modName}>{m.name}</span>
+                    <span className={styles.modDetail}>
+                      {m.hrs} hrs · {formatCurrency(m.hrs * rate, currency)}
+                    </span>
+                  </div>
+
+                  {subtasks.length > 0 && (
+                    <div className={styles.subList}>
+                      {subtasks.map(t => (
+                        <div key={t.id} className={styles.subRow}>
+                          <span className={styles.subName}>{t.name || 'Untitled subtask'}</span>
+                          <span className={styles.subDetail}>
+                            {t.hrs} hrs · {formatCurrency(t.hrs * rate, currency)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })
           )}
         </div>
 
