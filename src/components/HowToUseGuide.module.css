@@ -1,0 +1,155 @@
+.guide {
+  background: #0e0e10;
+  padding: 3rem 1.5rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.75rem 0;
+  text-align: center;
+}
+
+.intro {
+  font-size: 1.05rem;
+  color: #b0b0b8;
+  text-align: center;
+  margin: 0 0 2.5rem 0;
+}
+
+.steps {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.step:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.stepNumber {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.stepContent h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.stepContent p {
+  font-size: 0.95rem;
+  color: #b0b0b8;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.keyPoints {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.keyPointsTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+}
+
+.pointsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pointsList li {
+  font-size: 0.95rem;
+  color: #b0b0b8;
+  margin: 0;
+  padding: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.pointsList strong {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .guide {
+    padding: 2rem 1rem;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .intro {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .step {
+    grid-template-columns: 50px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .stepNumber {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .stepContent h3 {
+    font-size: 1.05rem;
+  }
+
+  .stepContent p {
+    font-size: 0.9rem;
+  }
+
+  .keyPoints {
+    padding: 1.5rem;
+  }
+
+  .keyPointsTitle {
+    font-size: 1.05rem;
+  }
+
+  .pointsList li {
+    font-size: 0.9rem;
+  }
+}

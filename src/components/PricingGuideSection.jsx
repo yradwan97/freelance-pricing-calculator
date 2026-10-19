@@ -66,6 +66,42 @@ export default function PricingGuideSection() {
               Adjust for your location, experience, and specialization.
             </p>
           </div>
+
+          <div className={styles.guideCard}>
+            <h3 className={styles.cardTitle}>Fixed vs. Hourly Pricing</h3>
+            <p className={styles.cardContent}>
+              <strong>Hourly:</strong> Best for ongoing work, retainers, or unclear scope. Protects you from underestimation.<br/>
+              <strong>Fixed:</strong> Better for defined projects. Requires accurate estimation, but clients prefer predictable costs. Always add 20-30% buffer for unknowns.
+            </p>
+          </div>
+
+          <div className={styles.guideCard}>
+            <h3 className={styles.cardTitle}>Handling Difficult Clients</h3>
+            <p className={styles.cardContent}>
+              Red flags: scope creep, payment delays, unrealistic timelines, vague requirements. Protect yourself with written contracts, upfront deposits, and clear revision limits. Sometimes the best clients are the ones you don't take. Not every dollar is worth your time.
+            </p>
+          </div>
+
+          <div className={styles.guideCard}>
+            <h3 className={styles.cardTitle}>Building Long-term Relationships</h3>
+            <p className={styles.cardContent}>
+              Repeat clients are gold—they reduce sales overhead and know your work. Offer loyalty discounts (5-10% off for ongoing retainers) and prioritize their rush requests. One good long-term client is worth 10 one-off projects.
+            </p>
+          </div>
+
+          <div className={styles.guideCard}>
+            <h3 className={styles.cardTitle}>Geographic Pricing Variations</h3>
+            <p className={styles.cardContent}>
+              US/Western Europe rates are 2-3x higher than Eastern Europe or Southeast Asia, reflecting cost of living and market rates. Remote work globalizes pricing—charge based on your expertise and market, not your location. Don't undercut your market.
+            </p>
+          </div>
+
+          <div className={styles.guideCard}>
+            <h3 className={styles.cardTitle}>Raising Your Rates</h3>
+            <p className={styles.cardContent}>
+              Increase rates annually by 10-20% minimum (inflation + experience). For existing clients, raise rates on new projects, not mid-contract. New clients won't know your old rates. After 2 years, you should be earning significantly more than when you started.
+            </p>
+          </div>
         </div>
 
         <div className={styles.tips}>

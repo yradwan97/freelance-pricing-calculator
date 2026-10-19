@@ -1,11 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdSenseUnit from './AdSenseUnit';
 import styles from './FloatingAd.module.css';
 
 export default function FloatingAd() {
   const [isOpen, setIsOpen] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 800;
+      setIsVisible(scrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  if (!isOpen || !isVisible) return null;
 
   return (
     <>

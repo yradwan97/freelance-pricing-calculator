@@ -61,6 +61,23 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.desktopSidebar {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.mobilePanel {
+  animation: slideDown 0.3s ease-out;
+}
+
 /* Show desktop sidebar on large screens */
 @media (min-width: 1200px) {
   .desktopSidebar {
@@ -80,6 +97,13 @@
 
   .mobilePanel {
     display: block;
+  }
+}
+
+/* Hide mobile panel on very small screens to reduce ad prominence */
+@media (max-width: 640px) {
+  .mobilePanel {
+    display: none;
   }
 }
 
