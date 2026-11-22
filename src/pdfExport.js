@@ -45,12 +45,12 @@ function drawHeader(doc, clientName, projectName) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(17);
   doc.setTextColor(...INK);
-  doc.text('DevPricer', MARGIN, y + 2);
+  // doc.text('DevPricer', MARGIN, y + 2);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...INK_SOFT);
-  doc.text('Freelance project estimate', MARGIN, y + 8);
+  // doc.text('Freelance project estimate', MARGIN, y + 8);
 
   doc.setFontSize(9);
   doc.setTextColor(...INK_FAINT);
@@ -291,12 +291,12 @@ function addFooters(doc, projectName) {
     doc.setFontSize(7.5);
     doc.setTextColor(...INK_FAINT);
 
-    let label = `DevPricer estimate — ${projectName?.trim() || 'Untitled project'}`;
+    let label = `${projectName?.trim() || 'Untitled project'}`;
     const reserveForPageNum = doc.getTextWidth(pageNumLabel) + 10;
     while (doc.getTextWidth(label) > CONTENT_W - reserveForPageNum && label.length > 20) {
       label = label.slice(0, -2);
     }
-    if (label !== `DevPricer estimate — ${projectName?.trim() || 'Untitled project'}`) {
+    if (label !== `${projectName?.trim() || 'Untitled project'}`) {
       label = label.replace(/\s+$/, '') + '…';
     }
 
@@ -363,5 +363,5 @@ export function exportEstimatePdf(props) {
   const { projectName } = props;
   const safeProject = (projectName?.trim() || 'project').replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '');
   const dateStr = new Date().toISOString().slice(0, 10);
-  doc.save(`DevPricer-Estimate-${safeProject}-${dateStr}.pdf`);
+  doc.save(`${safeProject}-${dateStr}.pdf`);
 }
