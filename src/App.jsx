@@ -113,6 +113,7 @@ export default function App() {
           addSubtask={pricing.addSubtask}
           updateSubtask={pricing.updateSubtask}
           removeSubtask={pricing.removeSubtask}
+          importModules={pricing.importModules}
         />
 
         <ComplexitySection

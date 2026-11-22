@@ -344,11 +344,11 @@ export function buildEstimateDoc({ estimate, complexity, buffer, clientName, pro
   y = drawSectionLabel(doc, y, '02', 'Payment schedule');
   y = drawPaymentTable(doc, y, total, payments, currency) + 8;
 
-  if (tip) {
-    const tipLineCount = doc.splitTextToSize(tip, CONTENT_W - 10).length;
-    y = ensureSpace(doc, y, tipLineCount * 4.3 + 8);
-    y = drawTip(doc, y, tip) + 4; // eslint-disable-line no-unused-vars
-  }
+  // if (tip) {
+  //   const tipLineCount = doc.splitTextToSize(tip, CONTENT_W - 10).length;
+  //   y = ensureSpace(doc, y, tipLineCount * 4.3 + 8);
+  //   y = drawTip(doc, y, tip) + 4; // eslint-disable-line no-unused-vars
+  // }
 
   addFooters(doc, projectName);
 

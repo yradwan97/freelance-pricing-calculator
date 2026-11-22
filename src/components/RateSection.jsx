@@ -78,7 +78,7 @@ export default function RateSection({ salary, setSalary, mult, setMult, buffer, 
           <>
         <SliderRow
           label="Monthly salary"
-          min={10000} max={150000} step={500}
+          min={1000} max={150000} step={500}
           value={salary}
           onChange={setSalary}
           display={formatCurrency(salary, currency)}

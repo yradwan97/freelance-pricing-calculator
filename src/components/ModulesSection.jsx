@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { formatCurrency } from "../utils";
+import ImportModulesModal from "./ImportModulesModal";
 import styles from "./ModulesSection.module.css";
 
 export default function ModulesSection({
@@ -14,9 +15,11 @@ export default function ModulesSection({
   clearAll,
   addSubtask,
   updateSubtask,
+  importModules,
   removeSubtask,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [newName, setNewName] = useState("");
   const [newHrs, setNewHrs] = useState("");
   const [nameErr, setNameErr] = useState(false);
@@ -280,9 +283,24 @@ export default function ModulesSection({
               >
                 Add module
               </button>
+              <button
+                className={styles.btnSm}
+                onClick={() => {
+                  setShowImport(true)
+                  setShowModal(false)
+                }}
+              >
+                Import Excel
+              </button>
             </div>
           </div>
         </div>
+      )}
+      {showImport && (
+        <ImportModulesModal
+          onClose={() => setShowImport(false)}
+          onImport={importModules}
+        />
       )}
     </section>
   );

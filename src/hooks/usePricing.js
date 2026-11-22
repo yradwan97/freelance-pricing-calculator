@@ -238,6 +238,42 @@ export function usePricing() {
     }]);
   }, []);
 
+  const importModules = useCallback((items, mode = "append") => {
+  const stamp = Date.now();
+  const fresh = items.map((it, i) =>
+    withSubtaskTotal({
+      id: `import_${stamp}_${i}`,
+      name: it.name,
+      hrs: parseHrs(it.hrs),
+      active: true,
+      custom: true,
+      subtasks: (it.subtasks ?? []).map((t, j) => ({
+        id: `sub_${stamp}_${i}_${j}`,
+        name: t.name,
+        hrs: parseHrs(t.hrs),
+      })),
+    })
+  );
+  const key = (m) => m.name.trim().toLowerCase();
+
+  setModules((prev) => {
+    if (mode === "replace") return fresh;
+    if (mode === "merge") {
+      const byName = new Map(fresh.map((m) => [key(m), m]));
+      const used = new Set();
+      const updated = prev.map((m) => {
+        const hit = byName.get(key(m));
+        if (!hit) return m;
+        used.add(key(m));
+        return { ...m, hrs: hit.hrs, subtasks: hit.subtasks }; // keeps id + active
+      });
+      return [...updated, ...fresh.filter((m) => !used.has(key(m)))];
+    }
+    return [...prev, ...fresh];
+  });
+  return fresh.length;
+}, []);
+
   const removeModule = useCallback((id) => {
     setModules(prev => prev.filter(m => m.id !== id));
   }, []);
@@ -532,6 +568,6 @@ const addSubtask = useCallback((moduleId, name = '', hrs = 1) => {
     // Draft save/load
     saveDraft, loadDraft, loadDraftFromStorage, getSavedDraftsCallback, deleteDraft,
     // Reset
-    resetAllToDefaults, addSubtask, updateSubtask, removeSubtask
+    resetAllToDefaults, addSubtask, updateSubtask, removeSubtask, importModules
   };
 }
